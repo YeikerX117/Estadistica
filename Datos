@@ -5,41 +5,52 @@
 
 from matplotlib import pyplot as plt 
 import pandas as pd
+import numpy as np
+import statistics as st
+
 #Importacion del archivo csv
-data=pd.read_csv("E:\INGENIERIA DE SISTEMAS\Ciencia de datos\Estadistica\Pruebas_ICFES_2011-2016.csv")
+data = pd.read_csv("E:\INGENIERIA DE SISTEMAS\Ciencia de datos\Estadistica\Pruebas_ICFES_2011-2016.csv")
+#Sustituciones a los valores del dataframe 
+data.replace({"NR": 0, "Nr": 0, "nan":0, "NaN":0, "A+":5,"A":4, "B":3, "C":2, "D":1}, inplace = True)
+data = data.fillna(value = 0)
+
 #Colores para el pie
 colors = ["#E13F29", "#D69A80", "#D63B59", "#AE5552", "#CB5C3B", "#EB8076", "#96624E"]
-#Sustituciones a los valores del dataframe 
-data.replace({"NR": 0, "Nr": 0, "nan":0, "NaN":0, "A+":5,"A":4, "B":3, "C":2, "D":1}, inplace=True)
-#prueba["valor"]=pd.to_numeric(data["AÑO 2019"], errors='coerce')
+
 #Asignacion de datos e impresion del pie
-plt.pie(data["AÑO 2019"], labels=data["INSTITUCION EDUCATIVA"], shadow=False,
-        colors=colors, explode=(0.15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.15,0,0,0,0,0,0,
-                                0,0,0,0.30,0,0,0,0,0,0,0,0,0.11,0,0.1,0,0,0.1,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,0), startangle=90,
-                                autopct='%1.1f%%')
-plt.axis("equal")   
+plt.pie(data["AÑO 2014"], labels = data["INSTITUCION EDUCATIVA"], shadow = False,
+        colors=colors, explode = (0.15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.15, 0, 0, 0, 0, 0, 0,
+                                0, 0, 0, 0.30, 0, 0, 0, 0, 0, 0, 0, 0, 0.11, 0, 0.1, 0, 0, 0.1, 0, 0, 0, 0, 0, 0,
+                                0, 0, 0, 0, 0, 0 ,0 ,0 ,0), startangle = 90,
+                                autopct = '%1.1f%%')
+plt.axis("equal")
+plt.title('Puntaje instituciones educativas año 2014')
 plt.tight_layout()
 plt.show()
 
 
 #Figura que compara la grafica de dos años 
-plt.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2019"], label='2019')
-plt.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2018"], label='2018')
-
-plt.xlabel('Colegios')
-plt.ylabel('Puntajes')
-plt.title("Puntajes 2018-2019")
-plt.legend()
+fig, ax = plt.subplots()
+ax.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2019"], label = '2019')
+ax.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2018"], label = '2018')
+ax.set_xlabel('Colegios')
+ax.set_ylabel('Puntajes')
+ax.set_title("Puntajes 2018-2019 de todas las instituciones educativas")
+ax.set_yticklabels(['','NR','D','C','B','A','A+'])
+ax.legend()
 plt.show()
 
 #Mostrando los datos de dos años en graficas distintas
-plt.figure(figsize=(15, 5))
+plt.figure(figsize = (15, 5))
 plt.subplot(131)
-plt.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2019"])
+plt.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2017"], color = 'green')
+plt.title('Puntajes año 2017 de todas las instituciones')
+plt.yticks(np.arange(6), labels = ('NR','D','C','B','A','A+'))
+
 plt.subplot(132)
-plt.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2018"])
-plt.suptitle('Grafico de puntajes')
+plt.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2018"], color = 'red')
+plt.title('Puntajes año 2018 de todas las instituciones')
+plt.yticks(np.arange(6),labels = ('NR','D','C','B','A','A+'))
 plt.show()
 
 #Calculo de medias

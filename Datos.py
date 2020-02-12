@@ -8,51 +8,30 @@ import pandas as pd
 import numpy as np
 import statistics as st
 
+# Función para retornar a valor Literal
+def clasificar(valor):
+    if valor == 1:
+        print('D')
+    elif valor == 2:
+        print('C')
+    elif valor == 3:
+        print('B')
+    elif valor == 4:
+        print('A')
+    elif valor == 5:
+        print('A+')
+    else:
+        print('NR')
+    print('')
+    del valor
+    
 #Importacion del archivo csv
 data = pd.read_csv("Pruebas_ICFES_2011-2016.csv")
+
 #Sustituciones a los valores del dataframe 
 data.replace({"NR": 0, "Nr": 0, "nan":0, "NaN":0, "A+":5,"A":4, "B":3, "C":2, "D":1}, inplace = True)
 data = data.fillna(value = 0)
 
-#Colores para el pie
-colors = ["#E13F29", "#D69A80", "#D63B59", "#AE5552", "#CB5C3B", "#EB8076", "#96624E"]
-
-#Asignacion de datos e impresion del pie
-plt.pie(data["AÑO 2014"], labels = data["INSTITUCION EDUCATIVA"], shadow = False,
-        colors=colors, explode = (0.15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.15, 0, 0, 0, 0, 0, 0,
-                                0, 0, 0, 0.30, 0, 0, 0, 0, 0, 0, 0, 0, 0.11, 0, 0.1, 0, 0, 0.1, 0, 0, 0, 0, 0, 0,
-                                0, 0, 0, 0, 0, 0 ,0 ,0 ,0), startangle = 90,
-                                autopct = '%1.1f%%')
-plt.axis("equal")
-plt.title('Puntaje instituciones educativas año 2014')
-plt.tight_layout()
-plt.show()
-
-#Figura que compara la grafica de dos años 
-fig, ax = plt.subplots()
-ax.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2019"], label = '2019')
-ax.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2018"], label = '2018')
-ax.set_xlabel('Colegios')
-ax.set_ylabel('Puntajes')
-ax.set_title("Puntajes 2018-2019 de todas las instituciones educativas")
-ax.set_yticklabels(['','NR','D','C','B','A','A+'])
-ax.legend()
-plt.show()
-
-#Mostrando los datos de dos años en graficas distintas
-plt.figure(figsize = (15, 5))
-plt.subplot(131)
-plt.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2017"], color = 'green')
-plt.title('Puntajes año 2017 de todas las instituciones')
-plt.yticks(np.arange(6), labels = ('NR','D','C','B','A','A+'))
-
-plt.subplot(132)
-plt.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2018"], color = 'red')
-plt.title('Puntajes año 2018 de todas las instituciones')
-plt.yticks(np.arange(6),labels = ('NR','D','C','B','A','A+'))
-plt.show()
-
-#Figura que muestra la cantidad de colegios que hay por calificación
 # Contar los colegios de la misma categoria por municipio
 notMun = pd.DataFrame(columns=['Municipio', 'A+', 'A', 'B', 'C', 'D','NR']) # DataFrame con la informacion
 mun = data.iloc[0, 0] # Guarda el municipio que se compara
@@ -89,8 +68,44 @@ for indice_fila, fila in data.iterrows():
         mun = data.iloc[indice_fila, 0] # Pasa al siguiente municipio
     if indice_fila == len(data)-1:
         notMun.loc[len(notMun.index)+1]=[data.loc[indice_fila-1,"MUNICIPIO"],aa,a,b,c,d, nr]
-        
-# Creación del diagrama
+
+#Colores para el pie
+colors = ["#E13F29", "#D69A80", "#D63B59", "#AE5552", "#CB5C3B", "#EB8076", "#96624E", "#FF5D47", "#FA928E"]
+
+#Asignacion de datos e impresion del pie
+plt.pie(notMun['C'], labels = notMun['Municipio'], shadow = False, colors=colors,
+        startangle = 90, autopct = '%1.1f%%')
+plt.axis("equal")
+plt.title('Instituciones educativas con puntaje C por municipio para el año 2019')
+plt.tight_layout()
+plt.show()
+
+#Figura que compara la grafica de dos años 
+fig, ax = plt.subplots()
+ax.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2019"], label = '2019')
+ax.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2018"], label = '2018')
+ax.set_xlabel('Colegios')
+ax.set_ylabel('Puntajes')
+ax.set_title("Puntajes 2018-2019 de todas las instituciones educativas")
+ax.set_yticklabels(['','NR','D','C','B','A','A+'])
+ax.legend()
+plt.show()
+
+#Mostrando los datos de dos años en graficas distintas
+plt.figure(figsize = (15, 5))
+plt.subplot(131)
+plt.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2017"], color = 'green')
+plt.title('Puntajes año 2017 de todas las instituciones')
+plt.yticks(np.arange(6), labels = ('NR','D','C','B','A','A+'))
+
+plt.subplot(132)
+plt.plot(data["INSTITUCION EDUCATIVA"], data["AÑO 2018"], color = 'red')
+plt.title('Puntajes año 2018 de todas las instituciones')
+plt.yticks(np.arange(6),labels = ('NR','D','C','B','A','A+'))
+plt.show()
+
+
+#Figura que muestra la cantidad de colegios que hay por calificación 
 fig, ax = plt.subplots()
 x = np.arange(12) # la cantidad de municipios
 ancho = 0.15  # tamaño de las barras
@@ -115,21 +130,28 @@ del x, ancho, a, aa, b, c, d, fila, indice_fila, mun, nr
 
 #Calculo de medias
 print("Media 2019")
-print(st.mean(data["AÑO 2019"]))
-print("Media 2018")
-print(st.mean(data["AÑO 2018"]))
+clasificar(round(st.mean(data["AÑO 2019"])))
+
+print("Media 2014")
+clasificar(round(st.mean(data["AÑO 2014"])))
+print('')
 
 #Calculo de mediana
-
 print("Mediana 2019")
-print(st.median(data["AÑO 2019"]))
+clasificar(round(st.median(data["AÑO 2019"])))
+
 print("Mediana 2018")
-print(st.median(data["AÑO 2018"]))
+clasificar(round(st.median(data["AÑO 2018"])))
+print('')
 
 #mediana datos agrupados
 print("Mediana datos agrupados")
-print(st.median_grouped(data["AÑO 2019"]))
+clasificar(round(st.median_grouped(data["AÑO 2019"])))
+print('')
 
 #varianza
-print("Varianza de datos 2018")
-print(st.variance(data["AÑO 2018"]))
+print("Varianza de datos 2019")
+clasificar(round(st.variance(data["AÑO 2019"])))
+
+print("Varianza de datos 2014")
+clasificar(round(st.variance(data["AÑO 2014"])))

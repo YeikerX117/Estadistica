@@ -9,7 +9,7 @@ import numpy as np
 import statistics as st
 
 #Importacion del archivo csv
-data = pd.read_csv("E:\INGENIERIA DE SISTEMAS\Ciencia de datos\Estadistica\Pruebas_ICFES_2011-2016.csv")
+data = pd.read_csv("Pruebas_ICFES_2011-2016.csv")
 #Sustituciones a los valores del dataframe 
 data.replace({"NR": 0, "Nr": 0, "nan":0, "NaN":0, "A+":5,"A":4, "B":3, "C":2, "D":1}, inplace = True)
 data = data.fillna(value = 0)
@@ -27,7 +27,6 @@ plt.axis("equal")
 plt.title('Puntaje instituciones educativas año 2014')
 plt.tight_layout()
 plt.show()
-
 
 #Figura que compara la grafica de dos años 
 fig, ax = plt.subplots()
@@ -53,6 +52,66 @@ plt.title('Puntajes año 2018 de todas las instituciones')
 plt.yticks(np.arange(6),labels = ('NR','D','C','B','A','A+'))
 plt.show()
 
+#Figura que muestra la cantidad de colegios que hay por calificación
+# Contar los colegios de la misma categoria por municipio
+notMun = pd.DataFrame(columns=['Municipio', 'A+', 'A', 'B', 'C', 'D','NR']) # DataFrame con la informacion
+mun = data.iloc[0, 0] # Guarda el municipio que se compara
+aa, a, b, c, d, nr = 0, 0, 0, 0, 0, 0 # Contadores de los tipos de pruebas
+for indice_fila, fila in data.iterrows(): 
+    if (fila["MUNICIPIO"] == mun):
+        if fila["AÑO 2019"] == 5:
+            aa = aa + 1
+        elif fila["AÑO 2019"] == 4:
+            a = a + 1
+        elif fila["AÑO 2019"] == 3:
+            b = b + 1
+        elif fila["AÑO 2019"] == 2:
+            c = c + 1
+        elif fila["AÑO 2019"] == 1:
+            d = d + 1
+        else:
+            nr = nr + 1
+    else:
+        notMun.loc[len(notMun.index)+1]=[data.loc[indice_fila-1,"MUNICIPIO"],aa,a,b,c,d, nr] # Guardar las pruebas
+        aa, a, b, c, d, nr = 0, 0, 0, 0, 0, 0 # Reinicia los contadores
+        if fila["AÑO 2019"] == 5:
+            aa = aa + 1
+        elif fila["AÑO 2019"] == 4:
+            a = a + 1
+        elif fila["AÑO 2019"] == 3:
+            b = b + 1
+        elif fila["AÑO 2019"] == 2:
+            c = c + 1
+        elif fila["AÑO 2019"] == 1:
+            d = d + 1
+        else:
+            nr = nr + 1
+        mun = data.iloc[indice_fila, 0] # Pasa al siguiente municipio
+del a, aa, b, c, d, fila, indice_fila, mun, nr
+
+# Creación del diagrama
+fig, ax = plt.subplots()
+x = np.arange(11) # la cantidad de municipios
+ancho = 0.15  # tamaño de las barras
+# Seteo de cada barra
+ax.bar(x - ancho/.33, np.array(notMun['A+']), ancho, color = '#5DD2BC', label='A+')
+ax.bar(x - ancho/.5, np.array(notMun['A']), ancho, color = '#CC6B27', label='A')
+ax.bar(x - ancho, np.array(notMun['B']), ancho, color = '#706A99', label='B')
+ax.bar(x, np.array(notMun['C']), ancho, color = '#4B93FF', label='C')
+ax.bar(x + ancho, np.array(notMun['D']), ancho, color = '#FFB217', label='D')
+ax.bar(x + ancho/.5, np.array(notMun['NR']), ancho, color = '#A1373D', label='No reporta')
+# Titulos, leyenda y rejilla
+ax.set_ylabel('Número de colegios')
+ax.set_xlabel('Municipio')
+ax.set_title('Calificación de los colegios en los departamentos de Risaralda año 2019')
+ax.set_xticks(x)
+ax.set_xticklabels(notMun['Municipio'])
+ax.yaxis.grid(True, linestyle='--', which='major', color='grey', alpha=.25)
+ax.legend()
+fig.tight_layout()
+plt.show()
+del x, ancho
+
 #Calculo de medias
 print("Media 2019")
 print(st.mean(data["AÑO 2019"]))
@@ -73,4 +132,3 @@ print(st.median_grouped(data["AÑO 2019"]))
 #varianza
 print("Varianza de datos 2018")
 print(st.variance(data["AÑO 2018"]))
-

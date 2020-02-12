@@ -87,11 +87,12 @@ for indice_fila, fila in data.iterrows():
         else:
             nr = nr + 1
         mun = data.iloc[indice_fila, 0] # Pasa al siguiente municipio
-del a, aa, b, c, d, fila, indice_fila, mun, nr
-
+    if indice_fila == len(data)-1:
+        notMun.loc[len(notMun.index)+1]=[data.loc[indice_fila-1,"MUNICIPIO"],aa,a,b,c,d, nr]
+        
 # Creación del diagrama
 fig, ax = plt.subplots()
-x = np.arange(11) # la cantidad de municipios
+x = np.arange(12) # la cantidad de municipios
 ancho = 0.15  # tamaño de las barras
 # Seteo de cada barra
 ax.bar(x - ancho/.33, np.array(notMun['A+']), ancho, color = '#5DD2BC', label='A+')
@@ -110,7 +111,7 @@ ax.yaxis.grid(True, linestyle='--', which='major', color='grey', alpha=.25)
 ax.legend()
 fig.tight_layout()
 plt.show()
-del x, ancho
+del x, ancho, a, aa, b, c, d, fila, indice_fila, mun, nr
 
 #Calculo de medias
 print("Media 2019")
